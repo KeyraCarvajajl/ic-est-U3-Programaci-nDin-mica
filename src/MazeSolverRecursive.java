@@ -9,35 +9,37 @@ public class MazeSolverRecursive implements MazeSolver {
         if (grid == null || grid.length == 0)
             return path;
 
-        if (findPath(grid, start, end, path))
+        boolean[][] visited = new boolean[grid.length][grid[0].length];
+
+        if (findPath(grid, start, end, path, visited))
             return path;
 
         return new ArrayList<>();
     }
 
-    private boolean findPath(boolean[][] grid, Cell start, Cell end, List<Cell> path) {
-        int row = start.row;
-        int column = start.column;
+    private boolean findPath(boolean[][] grid, Cell current, Cell end, List<Cell> path, boolean[][] visited) {
+        int row = current.row;
+        int column = current.column;
 
-        if (row >= grid.length || column >= grid[0].length || !grid[row][column])
+        if (row < 0 || row >= grid.length || column < 0 || column >= grid[0].length || !grid[row][column] || visited[row][column])
             return false;
-        
+
+        visited[row][column] = true;
+
         if (row == end.row && column == end.column) {
-            path.add(start);
+            path.add(current);
             return true;
         }
 
-        if (findPath(grid, new Cell(row + 1, column), end, path)) {
-            path.add(start);
+        if (findPath(grid, new Cell(column, row - 1), end, path, visited) || // arriba
+            findPath(grid, new Cell(column, row + 1), end, path, visited) || // abajo
+            findPath(grid, new Cell(column - 1, row), end, path, visited) || // izquierda
+            findPath(grid, new Cell(column + 1, row), end, path, visited)) { // derecha
+
+            path.add(current);
             return true;
         }
 
-        if (findPath(grid, new Cell(row, column + 1), end, path)) {
-            path.add(start);
-            return true;
-        }
-
-        return false;
+        return false; 
     }
-
 }
